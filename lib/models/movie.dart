@@ -41,6 +41,14 @@ class Movie {
     }
   }
 
+  get fullBackdropImg {
+    if (backdropPath == null) {
+      return 'https://i.stack.imgur.com/GNhxO.png';
+    } else {
+      return 'https://image.tmdb.org/t/p/w500/$backdropPath';
+    }
+  }
+
   factory Movie.fromJson(String str) => Movie.fromMap(json.decode(str));
 
   factory Movie.fromMap(Map<String, dynamic> json) => Movie(

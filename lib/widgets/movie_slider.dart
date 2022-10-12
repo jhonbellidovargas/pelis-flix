@@ -1,7 +1,33 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 
-class MovieSlider extends StatelessWidget {
-  const MovieSlider({super.key});
+import '../models/movie.dart';
+
+class MovieSlider extends StatefulWidget {
+  final List<Movie> movies;
+  final String? title;
+  final Function onNextPage;
+  const MovieSlider(
+      {super.key, required this.movies, this.title, required this.onNextPage});
+
+  @override
+  State<MovieSlider> createState() => _MovieSliderState();
+}
+
+class _MovieSliderState extends State<MovieSlider> {
+  final ScrollController scrollController = ScrollController();
+  @override
+  void initState() {
+    super.initState();
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent - 500) {
+        // print('Cargar siguientes peliculas');
+        widget.onNextPage();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -11,17 +37,27 @@ class MovieSlider extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.0),
-            child: Text('Populares',
-                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
-          ),
+          if (widget.title != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Text(
+                widget.title!,
+                style: const TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           const SizedBox(height: 5.0),
           Expanded(
             child: ListView.builder(
+                controller: scrollController,
                 scrollDirection: Axis.horizontal,
-                itemCount: 20,
-                itemBuilder: (_, int index) => const _MoviePoster()),
+                itemCount: widget.movies.length,
+                itemBuilder: (_, int index) {
+                  final movie = widget.movies[index];
+                  return _MoviePoster(movie: movie);
+                }),
           )
         ],
       ),
@@ -30,8 +66,10 @@ class MovieSlider extends StatelessWidget {
 }
 
 class _MoviePoster extends StatelessWidget {
+  final Movie movie;
   const _MoviePoster({
     Key? key,
+    required this.movie,
   }) : super(key: key);
 
   @override
@@ -44,12 +82,12 @@ class _MoviePoster extends StatelessWidget {
           children: [
             GestureDetector(
               onTap: () => Navigator.pushNamed(context, 'details',
-                  arguments: 'movie-instance'),
+                  arguments: movie),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20.0),
-                child: const FadeInImage(
-                  placeholder: AssetImage('assets/no-image.jpg'),
-                  image: NetworkImage('https://via.placeholder.com/300x400'),
+                child: FadeInImage(
+                  placeholder: const AssetImage('assets/no-image.jpg'),
+                  image: NetworkImage(movie.fullPosterImg),
                   width: 130,
                   height: 190,
                   fit: BoxFit.cover,
@@ -57,8 +95,8 @@ class _MoviePoster extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 5.0),
-            const Text(
-              'Spiderman: El regreso de la casa de la araña',
+            Text(
+              movie.title,
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
               textAlign: TextAlign.center,
