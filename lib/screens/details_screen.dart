@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pelisflix/widgets/widgets.dart';
 
 class DetailsScreen extends StatelessWidget {
   const DetailsScreen({super.key});
@@ -17,6 +18,8 @@ class DetailsScreen extends StatelessWidget {
             delegate: SliverChildListDelegate([
           const SizedBox(height: 10),
           const _PosterAndTitle(),
+          const _Overview(),
+          const CastingCards(),
         ]))
       ],
     ));
@@ -37,6 +40,7 @@ class _CustomAppBar extends StatelessWidget {
         title: Container(
           width: double.infinity,
           alignment: Alignment.bottomCenter,
+          padding: const EdgeInsets.only(bottom: 10),
           color: Colors.black12,
           child: const Text(
             'movie.title',
@@ -87,13 +91,29 @@ class _PosterAndTitle extends StatelessWidget {
                   const Icon(Icons.star_outline, size: 15, color: Colors.grey),
                   const SizedBox(width: 5),
                   Text(
-                    'movie.voteAverage',
+                    'movie.voteAverages',
                     style: textTheme.caption,
                   )
                 ],
-              )
+              ),
             ])
           ],
         ));
+  }
+}
+
+class _Overview extends StatelessWidget {
+  const _Overview({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+      child: Text(
+        'Esta es una pelicula trata de un hombre que se encuentra en una situacion dificil y tiene que tomar una decision. Entre sus enemigos estan los superheroes ',
+        textAlign: TextAlign.justify,
+        style: Theme.of(context).textTheme.subtitle1,
+      ),
+    );
   }
 }
